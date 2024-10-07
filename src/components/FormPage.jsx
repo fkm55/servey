@@ -1,265 +1,238 @@
-import React, { useState } from 'react';
-import {
-  DocumentTextIcon,
-  ChatBubbleLeftIcon,
-  PlusIcon,
-  CalendarIcon,
-  TrashIcon,
-  MapPinIcon,
-  CalculatorIcon,
-  CodeBracketIcon,
-  ChartBarIcon,
-  EllipsisHorizontalCircleIcon,
-  Squares2X2Icon,
-} from '@heroicons/react/24/solid';
+import React, { useState } from "react";
+import { FaTrash } from "react-icons/fa"; // Importing delete icon from react-icons
+
+// Define the available question types
+const formOptions = [
+  { label: "Select One", value: "select_one" },
+  { label: "Select Many", value: "select_many" },
+  { label: "Text", value: "text" },
+  { label: "Number", value: "number" },
+  { label: "Date & Time", value: "date_time" },
+  { label: "Photo", value: "photo" },
+  { label: "Audio", value: "audio" },
+  { label: "Video", value: "video" },
+  { label: "File", value: "file" },
+  { label: "Barcode/QR Code", value: "barcode" },
+  { label: "Rating", value: "rating" },
+  { label: "Range", value: "range" },
+];
 
 const FormPage = () => {
-  const [selectedInput, setSelectedInput] = useState(null);
-  const [selectOptions, setSelectOptions] = useState([
-    { id: 1, value: 'Option 1' },
-    { id: 2, value: 'Option 2' },
-  ]);
+  const [questions, setQuestions] = useState([]);
+  const [selectOneOptions, setSelectOneOptions] = useState(["Option 1", "Option 2"]);
 
-  // Function to handle adding new options
-  const addOption = () => {
-    const newOptionId = selectOptions.length + 1;
-    setSelectOptions([...selectOptions, { id: newOptionId, value: `Option ${newOptionId}` }]);
+  // Add a new question type to the list directly after clicking it
+  const handleSelectOption = (option) => {
+    setQuestions([...questions, option.value]);
   };
 
-  // Function to handle updating an option's value
-  const handleOptionChange = (id, newValue) => {
-    const updatedOptions = selectOptions.map((option) =>
-      option.id === id ? { ...option, value: newValue } : option
-    );
-    setSelectOptions(updatedOptions);
+  // Delete a specific question
+  const deleteQuestion = (indexToDelete) => {
+    setQuestions(questions.filter((_, index) => index !== indexToDelete));
   };
 
-  // Function to handle deleting an option
-  const deleteOption = (id) => {
-    setSelectOptions(selectOptions.filter((option) => option.id !== id));
+  // Add a new option for "Select One"
+  const addSelectOneOption = () => {
+    setSelectOneOptions([...selectOneOptions, `Option ${selectOneOptions.length + 1}`]);
+  };
+
+  // Delete a specific option within "Select One"
+  const deleteSelectOneOption = (indexToDelete) => {
+    setSelectOneOptions(selectOneOptions.filter((_, index) => index !== indexToDelete));
+  };
+
+  // Render the appropriate input type based on the selected option
+  const renderQuestionInput = (questionType, index) => {
+    switch (questionType) {
+      case "select_one":
+        return (
+          <div key={index} className="w-full mb-14 p-4 border border-green-300 rounded-lg bg-white shadow-sm">
+            <label className="block font-semibold mb-2">Select One</label>
+            {selectOneOptions.map((option, i) => (
+              <div key={i} className="flex items-center mb-2">
+                <input
+                  type="text"
+                  value={option}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  placeholder={`Option ${i + 1}`}
+                />
+                {/* Delete option icon */}
+                <FaTrash
+                  className="text-red-500 ml-2 cursor-pointer"
+                  onClick={() => deleteSelectOneOption(i)}
+                />
+              </div>
+            ))}
+            <button
+              onClick={addSelectOneOption}
+              className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 mt-2"
+            >
+              + Add another option
+            </button>
+          </div>
+        );
+      case "text":
+        return (
+          <div key={index} className="w-full mb-4 p-4 border border-green-300 rounded-lg bg-white shadow-sm">
+            <label className="block font-semibold mb-2">Text</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-green-300 rounded"
+              placeholder="Enter text"
+            />
+          </div>
+        );
+      // Add similar cases for other question types (e.g. select_many, number, date_time, etc.)
+      case "number":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Number</label>
+            <input
+              type="number"
+              className="w-full p-2 border border-green-300 rounded"
+              placeholder="Enter a number"
+            />
+          </div>
+        );
+      case "date_time":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Date & Time</label>
+            <input
+              type="datetime-local"
+              className="w-full p-2 border border-green-300 rounded"
+            />
+          </div>
+        );
+      case "photo":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Photo</label>
+            <input type="file" accept="image/*" className="w-full p-2" />
+          </div>
+        );
+      case "audio":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Audio</label>
+            <input type="file" accept="audio/*" className="w-full p-2" />
+          </div>
+        );
+      case "video":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Video</label>
+            <input type="file" accept="video/*" className="w-full p-2" />
+          </div>
+        );
+      case "file":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">File</label>
+            <input type="file" className="w-full p-2" />
+          </div>
+        );
+      case "barcode":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Barcode/QR Code</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-green-300 rounded"
+              placeholder="Scan or enter code"
+            />
+          </div>
+        );
+      case "rating":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Rating</label>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              className="w-full"
+              step="1"
+            />
+          </div>
+        );
+      case "range":
+        return (
+          <div key={index} className="w-full mb-4">
+            <label className="block font-semibold mb-2">Range</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              className="w-full"
+              step="1"
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen flex justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 className="text-2xl font-semibold mb-4">Add Form Elements</h2>
+    <div className="p-8 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Form Builder</h1>
 
-        {/* Form Options */}
-        <div className="grid grid-cols-4 gap-4">
-          {/* Select One */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('selectOne')}
-          >
-            <PlusIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Select One</span>
-          </div>
-
-          {/* Text */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('text')}
-          >
-            <DocumentTextIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Text</span>
-          </div>
-
-          {/* Date */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('date')}
-          >
-            <CalendarIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Date</span>
-          </div>
-
-          {/* Number */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('number')}
-          >
-            <ChatBubbleLeftIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Number</span>
-          </div>
-
-          {/* Decimal */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('decimal')}
-          >
-            <EllipsisHorizontalCircleIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Decimal</span>
-          </div>
-
-          {/* Line */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('line')}
-          >
-            <ChartBarIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Line</span>
-          </div>
-
-          {/* Point */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('point')}
-          >
-            <MapPinIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Point</span>
-          </div>
-
-          {/* Area */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('area')}
-          >
-            <Squares2X2Icon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Area</span>
-          </div>
-
-          {/* Calculate */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('calculate')}
-          >
-            <CalculatorIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">Calculate</span>
-          </div>
-
-          {/* External XML */}
-          <div
-            className="flex flex-col items-center justify-center p-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
-            onClick={() => setSelectedInput('externalXml')}
-          >
-            <CodeBracketIcon className="h-6 w-6 text-gray-500 mb-1" />
-            <span className="text-xs">External XML</span>
-          </div>
+      {/* Add Form */}
+      <div className="bg-white p-4 rounded shadow-lg">
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">Project Title</label>
+          <input
+            type="text"
+            className="w-full p-2 border border-green-300 rounded"
+            placeholder="Enter your project title"
+          />
         </div>
 
-        {/* Render the selected form element */}
-        <div className="mt-8">
-          {/* Handle rendering based on what is selected */}
-          {selectedInput === 'selectOne' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Select an option</label>
-              {selectOptions.map((option) => (
-                <div key={option.id} className="flex items-center mb-2">
-                  <input
-                    type="text"
-                    value={option.value}
-                    onChange={(e) => handleOptionChange(option.id, e.target.value)}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        {/* Displaying the added questions with proper input rendering */}
+        {questions.length > 0 && (
+          <div className="mt-6">
+            <h3 className="font-semibold">Added Questions:</h3>
+            <ul className="mt-2">
+              {questions.map((question, index) => (
+                <li key={index} className="flex items-center">
+                  {/* Trash icon moved to the left */}
+                  <FaTrash
+                    className="text-red-500 mr-4 cursor-pointer"
+                    onClick={() => deleteQuestion(index)}
                   />
-                  <button
-                    onClick={() => deleteOption(option.id)}
-                    className="ml-2 bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </button>
-                </div>
+                  {/* Render the question form */}
+                  {renderQuestionInput(question, index)}
+                </li>
               ))}
-
-              {/* Button to add a new option */}
-              <div
-                onClick={addOption}
-                className="mt-2 cursor-pointer text-blue-600 flex items-center hover:text-blue-800"
-              >
-                <PlusIcon className="h-5 w-5 mr-1" />
-                <span>Add another option</span>
-              </div>
-            </div>
-          )}
-
-          {selectedInput === 'text' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter text</label>
-              <input
-                type="text"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Enter some text"
-              />
-            </div>
-          )}
-
-          {selectedInput === 'date' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Pick a date</label>
-              <input
-                type="date"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-          )}
-
-          {selectedInput === 'number' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter a number</label>
-              <input
-                type="number"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Enter a number"
-              />
-            </div>
-          )}
-
-          {selectedInput === 'decimal' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter a decimal</label>
-              <input
-                type="number"
-                step="0.01"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Enter a decimal number"
-              />
-            </div>
-          )}
-
-          {selectedInput === 'line' && (
-          <div className="mb-4">
-           <label className="block text-sm font-medium text-gray-700">Enter multiple lines</label>
-           <textarea
-            rows="4"
-           className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-           placeholder="Enter multiple lines"
-       />
-         {/* Render the line input */}
-        </div>
+            </ul>
+          </div>
         )}
 
-
-          {selectedInput === 'point' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter a point</label>
-              {/* Render the point input */}
-            </div>
-          )}
-
-          {selectedInput === 'area' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter an area</label>
-              {/* Render the area input */}
-            </div>
-          )}
-
-          {selectedInput === 'calculate' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter a calculation</label>
-              {/* Render the calculate input */}
-            </div>
-          )}
-
-          {selectedInput === 'externalXml' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Enter external XML</label>
-              {/* Render the external XML input */}
-            </div>
-          )}
+        {/* Dropdown for selecting question types */}
+        <div className="mt-4 p-4 bg-gray-50 border rounded shadow-lg">
+          <h3 className="font-semibold mb-2">Select a question type:</h3>
+          <ul className="grid grid-cols-2 gap-2">
+            {formOptions.map((option) => (
+              <li
+                key={option.value}
+                onClick={() => handleSelectOption(option)}
+                className="cursor-pointer hover:bg-gray-200 p-2 border rounded"
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="mt-6">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save</button>
-        </div>
+        {/* Button to finalize the form */}
+        {questions.length > 0 && (
+          <div className="mt-4">
+            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Save Form
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
